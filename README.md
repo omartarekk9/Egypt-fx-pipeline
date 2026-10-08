@@ -78,7 +78,9 @@ Power BI file: `FX_Dashboard.pbix` (reads the SQL views `vw_fx_daily` and `vw_fx
 |---|---|
 | ![USD](screenshots/01_usd_overview.png) | ![SAR](screenshots/02_sar_peg.png) |
 
-Scheduled task: `screenshots/03_scheduled_task.png`.
+Scheduled task (runs daily at 09:00):
+
+![Scheduled task](screenshots/03_scheduled_task.png)
 
 ## Data source and limitations
 Rates come from the open [currency-api](https://github.com/fawazahmed0/exchange-api) (CC0, free, no key; daily history since March 2024). They are reference rates for analysis, not trading quotes, and can differ from bank or parallel-market rates.
