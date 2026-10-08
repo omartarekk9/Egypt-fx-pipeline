@@ -1,0 +1,4 @@
+requests>=2.31
+pandas>=2.0
+pyodbc>=5.0
+pytest>=8.0
