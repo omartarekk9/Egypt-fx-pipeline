@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-fx}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?copy .env.example to .env and set a password}
+      POSTGRES_DB: ${POSTGRES_DB:-fxtracker}
+    ports:
+      - "5433:5432"   # 5433 on the host so it never clashes with another Postgres on 5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./sql/postgres:/docker-entrypoint-initdb.d:ro   # *.sql here runs once, on first start
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
