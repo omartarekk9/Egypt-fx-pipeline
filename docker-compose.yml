@@ -30,5 +30,32 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?copy .env.example to .env and set a password}
       POSTGRES_DB: ${POSTGRES_DB:-fxtracker}
 
+  airflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+    profiles: ["airflow"]   # start it on demand: docker compose up -d airflow
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: standalone      # one container running scheduler, API server and DAG processor
+    ports:
+      - "8080:8080"
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "true"   # local use only: no login screen
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-fx}:${POSTGRES_PASSWORD}@postgres:5432/airflow
+      PYTHONPATH: /opt/airflow   # so the DAG can `import src...`
+      FX_PG_HOST: postgres
+      FX_PG_PORT: "5432"
+      POSTGRES_USER: ${POSTGRES_USER:-fx}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?copy .env.example to .env and set a password}
+      POSTGRES_DB: ${POSTGRES_DB:-fxtracker}
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/airflow/src
+      - ./data:/opt/airflow/data
+
 volumes:
   pgdata:

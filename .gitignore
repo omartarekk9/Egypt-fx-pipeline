@@ -3,3 +3,5 @@ __pycache__/
 pipeline.log
 .env
 run_daily_output.log
+
+data/
