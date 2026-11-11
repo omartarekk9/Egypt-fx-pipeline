@@ -16,5 +16,19 @@ services:
       timeout: 3s
       retries: 10
 
+  pipeline:
+    build: .
+    profiles: ["run"]   # not started by `docker compose up`; run it on demand
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      FX_BACKEND: postgres
+      FX_PG_HOST: postgres   # the service name is the hostname on the compose network
+      FX_PG_PORT: "5432"     # inside the network it is 5432, not the published 5433
+      POSTGRES_USER: ${POSTGRES_USER:-fx}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?copy .env.example to .env and set a password}
+      POSTGRES_DB: ${POSTGRES_DB:-fxtracker}
+
 volumes:
   pgdata:
