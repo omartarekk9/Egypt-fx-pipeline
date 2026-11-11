@@ -8,14 +8,23 @@ Days the source simply doesn't have (HTTP 404) are logged as warnings and don't 
 """
 import argparse
 import logging
+import os
 import sys
 from datetime import date, timedelta
 from pathlib import Path
 
-from src import load
 from src.extract import SourceMissingError, fetch_day
 from src.transform import transform
 from src.validate import validate_frame
+
+# Which database to load into: SQL Server (default, what the scheduled task uses) or Postgres.
+_backend = os.getenv("FX_BACKEND", "sqlserver").lower()
+if _backend == "postgres":
+    from src import load_pg as load
+elif _backend == "sqlserver":
+    from src import load
+else:
+    sys.exit(f"Unknown FX_BACKEND {_backend!r} (use 'sqlserver' or 'postgres')")
 
 logging.basicConfig(
     level=logging.INFO,
